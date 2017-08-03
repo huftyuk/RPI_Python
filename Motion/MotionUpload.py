@@ -8,6 +8,9 @@ GPIO.setup(PIR_PIN, GPIO.IN)
 
 #Assumes this has been executed.
 #avconv -i rtsp://192.168.1.74/unicast -c:v copy -c:a copy -f mpegts udp://localhost:1234
+
+p0 = subprocess.Popen(["avconv", '-i', 'rtsp://192.168.1.74/unicast', '-c:v', 'copy','-c:a','copy', '-f', 'mpegts udp://localhost:1234'])
+time.sleep(10)
 #ffmpeg -f lavfi -i color=black:WxH:r=FPS:d=30 -i camera_input \
 #       -filter_complex "[0][1]concat[v]" -map "[v]" StreamingOutput
 #    ffmpeg -f lavfi -i nullsrc=s=WxH:d=N -an -i rtsp://stream-ip:port -filter_complex "concat" -an -r 10 -tune zerolatency -preset fast -vcodec libx264 -f mpegts udp://outgoing-ip:port

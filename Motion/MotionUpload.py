@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import urllib2
 import subprocess
 
 GPIO.setmode(GPIO.BCM)
@@ -9,7 +10,7 @@ GPIO.setup(PIR_PIN, GPIO.IN)
 #Assumes this has been executed.
 #avconv -i rtsp://192.168.1.74/unicast -c:v copy -c:a copy -f mpegts udp://localhost:1234
 
-p0 = subprocess.Popen(["avconv", '-i', 'rtsp://192.168.1.74/unicast', '-c:v', 'copy','-c:a','copy', '-f', 'mpegts udp://localhost:1234'])
+#p0 = subprocess.Popen(["avconv", '-i', 'rtsp://192.168.1.74/unicast', '-c:v', 'copy','-c:a','copy', '-f', 'mpegts udp://localhost:1234'])
 time.sleep(10)
 #ffmpeg -f lavfi -i color=black:WxH:r=FPS:d=30 -i camera_input \
 #       -filter_complex "[0][1]concat[v]" -map "[v]" StreamingOutput
@@ -22,6 +23,8 @@ try:
         # Outer loop sits in idle waiting for motion.
         if GPIO.input(PIR_PIN):
             print "Motion Detected!"
+            urllib2.urlopen('https://maker.ifttt.com/trigger/%22bingo%22/with/key/fF_oXNFLzvmF_Rlpn1_NDiabvQobeCYJ_QVfX39DqbV')
+
             #So lets get some capture started
             #time.sleep(1)
             #avconv -i rtsp://192.168.1.74/unicast -c:v copy -map 0:0 -f segment -segment_time 5 -segment_format mp4 "Camera%04d.mp4"
@@ -43,7 +46,7 @@ try:
             #time.sleep(20)
             p1.terminate()
             NameArg = "--title=" + Name
-            SecretArg =  "--client-secrets=/home/pi/Motion/client_secret_542273631401-5afokng7qre7hvetqme0ug2vovihliq7.apps.googleusercontent.com.json"
+            SecretArg =  "--client-secrets=/home/pi/RPI_Python/Motion/client_secret_542273631401-5afokng7qre7hvetqme0ug2vovihliq7.apps.googleusercontent.com.json"
             ##returncode = call(["youtube-upload" ,NameArg , Name])
             p2 = subprocess.Popen(["youtube-upload" ,NameArg , SecretArg , Name])
         else:

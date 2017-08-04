@@ -7,11 +7,12 @@ GPIO.setmode(GPIO.BCM)
 PIR_PIN = 7
 GPIO.setup(PIR_PIN, GPIO.IN)
 
-#Assumes this has been executed.
+#Assumes this has been executed (now runs below)
 #avconv -i rtsp://192.168.1.74/unicast -c:v copy -c:a copy -f mpegts udp://localhost:1234
 
-#p0 = subprocess.Popen(["avconv", '-i', 'rtsp://192.168.1.74/unicast', '-c:v', 'copy','-c:a','copy', '-f', 'mpegts udp://localhost:1234'])
-time.sleep(10)
+#Start rencoding the stream locally.
+#p0 = subprocess.Popen(["avconv", '-i', 'rtsp://192.168.1.74/unicast', '-c:v', 'copy','-c:a','copy', '-f', 'mpegts' ,'udp://localhost:1234'])
+#time.sleep(30)
 #ffmpeg -f lavfi -i color=black:WxH:r=FPS:d=30 -i camera_input \
 #       -filter_complex "[0][1]concat[v]" -map "[v]" StreamingOutput
 #    ffmpeg -f lavfi -i nullsrc=s=WxH:d=N -an -i rtsp://stream-ip:port -filter_complex "concat" -an -r 10 -tune zerolatency -preset fast -vcodec libx264 -f mpegts udp://outgoing-ip:port
@@ -23,7 +24,7 @@ try:
         # Outer loop sits in idle waiting for motion.
         if GPIO.input(PIR_PIN):
             print "Motion Detected!"
-            urllib2.urlopen('https://maker.ifttt.com/trigger/%22bingo%22/with/key/fF_oXNFLzvmF_Rlpn1_NDiabvQobeCYJ_QVfX39DqbV')
+            urllib2.urlopen('https://maker.ifttt.com/trigger/LoungeMotionDetected/with/key/fF_oXNFLzvmF_Rlpn1_NDiabvQobeCYJ_QVfX39DqbV')
 
             #So lets get some capture started
             #time.sleep(1)
@@ -31,11 +32,12 @@ try:
             #avconv -i  -c:v copy -map 0:0 -t 00:00:30 "Camera1.mp4"
             
             TimeString = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-            Name = "Camera" + TimeString + ".mp4"
+            Name = "/home/pi/Videos/Camera" + TimeString + ".mp4"
             #returncode = subprocess.call(["avconv" , '-i', 'udp://localhost:1235?multicast=1','-c:v','copy','-map','0:0','-t','00:05:00' , Name])
             p1 = subprocess.Popen(["avconv" , '-i', 'udp://localhost:1234?multicast=1','-c:v','copy','-c:a','copy','-map','0:0' , Name])
+            #p1 = subprocess.Popen(["avconv" , '-i', 'udp://localhost:1234?multicast=1','-c:v','copy','-c:a','copy','-map','0' , Name])
             tsincemotion = 0
-            while tsincemotion < 30:
+            while tsincemotion < 60:
                 if GPIO.input(PIR_PIN):
                     print("More motion")
                     tsincemotion = 0
